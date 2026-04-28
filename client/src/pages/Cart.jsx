@@ -41,7 +41,7 @@ export default function Cart() {
                     {item.image ? (
                       <img src={item.image.replace('/public', '')} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
-                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '40px' }}>👕</div>
+                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', color: '#ccc' }}>No Image</div>
                     )}
                   </div>
                   
@@ -103,15 +103,41 @@ export default function Cart() {
                 <span>₹{totalPrice + Math.floor(totalPrice * 0.05)}</span>
               </div>
               
+              {/* FAKE PAYMENT METHOD */}
+              <div style={{ marginBottom: '30px', borderTop: '2px solid #f0f0f0', paddingTop: '20px' }}>
+                <h4 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 15px 0' }}>Payment Method</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', cursor: 'pointer', color: '#444' }}>
+                    <input type="radio" name="payment" defaultChecked style={{ accentColor: '#111' }} /> Credit or Debit Card
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', cursor: 'pointer', color: '#444' }}>
+                    <input type="radio" name="payment" style={{ accentColor: '#111' }} /> UPI / Wallet
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', cursor: 'pointer', color: '#444' }}>
+                    <input type="radio" name="payment" style={{ accentColor: '#111' }} /> Cash on Delivery
+                  </label>
+                </div>
+              </div>
+              
               <button style={{
                 width: '100%', padding: '18px', background: '#000', color: '#fff', border: 'none', borderRadius: '30px', cursor: 'pointer',
                 fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', transition: 'all 0.2s', fontSize: '14px',
-                boxShadow: '0 10px 20px rgba(0,0,0,0.15)'
+                boxShadow: '0 10px 20px rgba(0,0,0,0.15)', marginBottom: '15px'
               }}
-              onMouseEnter={e => { e.target.style.transform = 'translateY(-2px)' }}
-              onMouseLeave={e => { e.target.style.transform = 'translateY(0)' }}
-              onClick={() => { alert('Proceeding to checkout sequence...'); navigate('/'); }}>
+              onMouseEnter={e => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 14px 28px rgba(0,0,0,0.22)'; }}
+              onMouseLeave={e => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = '0 10px 20px rgba(0,0,0,0.15)'; }}
+              onClick={() => navigate('/checkout')}>
                 Proceed to Checkout
+              </button>
+
+              <button style={{
+                width: '100%', padding: '18px', background: '#fff', color: '#000', border: '2px solid #000', borderRadius: '30px', cursor: 'pointer',
+                fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', transition: 'all 0.2s', fontSize: '14px'
+              }}
+              onMouseEnter={e => { e.target.style.background = '#f5f5f5' }}
+              onMouseLeave={e => { e.target.style.background = '#fff' }}
+              onClick={() => navigate('/')}>
+                Back to Home
               </button>
             </div>
             

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import TryOnOverlay from './TryOnOverlay';
 
 const products = [
   {id:1, name:"Luxury Dress", price:2999, image:"/public/garments/dress.jpeg"},
@@ -18,6 +19,14 @@ const products = [
 
 export default function ProductGrid() {
   const navigate = useNavigate();
+  const [tryOnOpen, setTryOnOpen] = React.useState(false);
+  const [currentGarment, setCurrentGarment] = React.useState(null);
+
+  const handleTryOn = (e, product) => {
+    e.stopPropagation(); // Avoid navigating to product page
+    setCurrentGarment(product.image.replace('/public', ''));
+    setTryOnOpen(true);
+  };
 
   return (
     <section style={{ padding: '100px 50px', maxWidth: '1400px', margin: '0 auto', background: 'var(--color-bg)' }}>
@@ -57,16 +66,18 @@ export default function ProductGrid() {
                 onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop'; }}
               />
               <div 
+                onClick={(e) => handleTryOn(e, p)}
                 style={{
                   position: 'absolute', bottom: '20px', left: '20px', right: '20px',
                   background: 'rgba(255,255,255,0.95)', padding: '14px', borderRadius: '10px', 
                   textAlign: 'center', fontWeight: 'bold', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px',
-                  opacity: 0.9, transition: 'all 0.3s ease', boxShadow: 'var(--shadow-md)'
+                  opacity: 0.9, transition: 'all 0.3s ease', boxShadow: 'var(--shadow-md)',
+                  zIndex: 10
                 }}
                 onMouseEnter={e => { e.target.style.background = '#000'; e.target.style.color = '#fff'; }}
                 onMouseLeave={e => { e.target.style.background = 'rgba(255,255,255,0.95)'; e.target.style.color = '#000'; }}
               >
-                AI Try On
+                Try It On
               </div>
             </div>
             <div style={{ padding: '0 5px' }}>
@@ -79,6 +90,16 @@ export default function ProductGrid() {
           </div>
         ))}
       </div>
+
+      {/* Try-On Overlay */}
+      {tryOnOpen && (
+        <div style={{ position:'fixed', bottom:30, right:30, width:'380px', zIndex:1000, maxHeight:'calc(100vh - 60px)', overflowY:'auto' }}>
+          <TryOnOverlay 
+            garmentSnapshot={currentGarment} 
+            onClose={() => setTryOnOpen(false)} 
+          />
+        </div>
+      )}
     </section>
   );
 }

@@ -5,7 +5,7 @@ export default function Footer() {
     <footer style={{
       background: '#0d0d0d', color: '#fff', padding: '90px 50px 40px', fontFamily: 'var(--font-body)'
     }}>
-      <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '60px' }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '60px' }}>
         
         <div>
           <h2 style={{ fontSize: '28px', fontWeight: 900, letterSpacing: '4px', marginBottom: '25px', fontFamily: 'var(--font-heading)' }}>VASTRAVERSE</h2>
@@ -45,24 +45,9 @@ export default function Footer() {
           </ul>
         </div>
 
-        <div>
-          <h4 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '25px', textTransform: 'uppercase', letterSpacing: '2px', color: '#fff' }}>Newsletter</h4>
-          <p style={{ color: '#888', fontSize: '15px', marginBottom: '20px', lineHeight: 1.6 }}>Subscribe to get 10% off your first order and exclusive updates.</p>
-          <div style={{ display: 'flex' }}>
-            <input type="email" placeholder="Email address" style={{ 
-              padding: '16px 20px', border: '1px solid #333', outline: 'none', background: '#0a0a0a', 
-              color: '#fff', borderRadius: '8px 0 0 8px', width: '100%', fontSize: '14px', fontFamily: 'inherit' 
-            }} />
-            <button style={{ 
-              padding: '16px 25px', background: '#fff', color: '#000', border: 'none', fontWeight: 'bold', 
-              cursor: 'pointer', borderRadius: '0 8px 8px 0', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '12px' 
-            }}>Join</button>
-          </div>
-        </div>
-
       </div>
       <div style={{ borderTop: '1px solid #222', marginTop: '80px', paddingTop: '30px', color: '#666', fontSize: '13px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <p>© 2026 Vastraverse. Built with ❤️ for the future of fashion.</p>
+        <p>© 2026 Vastraverse. Built with passion for the future of fashion.</p>
         <div style={{ display: 'flex', gap: '30px' }}>
           <span style={{ cursor: 'pointer' }}>Privacy Policy</span>
           <span style={{ cursor: 'pointer' }}>Terms of Service</span>

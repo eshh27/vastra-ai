@@ -45,7 +45,7 @@ export default function Demos() {
             onMouseEnter={e => e.target.style.transform = 'translateY(-3px)'}
             onMouseLeave={e => e.target.style.transform = 'translateY(0)'}
           >
-            ✨ Open 3D Studio
+            Open 3D Studio
           </button>
         </div>
 

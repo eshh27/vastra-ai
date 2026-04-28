@@ -1,0 +1,5 @@
+# ── Gemini API key — get yours FREE at https://aistudio.google.com/apikey
+GEMINI_API_KEY=YOUR_GEMINI_API_KEY_HERE
+
+# Replicate API token
+REPLICATE_API_TOKEN=r8_MXW3VDYeTu4Qn8uPa6yjVSqgr4JAAzb3gB35r

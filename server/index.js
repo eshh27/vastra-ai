@@ -6,8 +6,17 @@ const path = require("path")
 const Replicate = require("replicate")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
+const { GoogleGenerativeAI } = require("@google/generative-ai")
+const sharp = require("sharp")
+const axios = require("axios")
+require("dotenv").config()
 
 const app = express()
+
+// ── Gemini API Logic ───────────────────────────────────────────────────
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY)
+
 
 // Increase JSON payload limit just in case
 app.use(express.json({ limit: "50mb" }))
@@ -20,7 +29,7 @@ app.use("/garments", express.static(
   path.join(__dirname, "../client/public/garments")
 ))
 
-const replicate = new Replicate({ auth: "r8_MXW3VDYeTu4Qn8uPa6yjVSqgr4JAAzb3gB35r" })
+const replicate = new Replicate({ auth: process.env.REPLICATE_API_TOKEN })
 
 const storage = multer.diskStorage({
   destination: "uploads/",
@@ -96,12 +105,169 @@ app.post(
       res.json({ success: true, result: resultUrl })
 
     } catch (err) {
-      console.error("Replicate Error Details:", err)
-      const errorMsg = err.response?.data?.detail || err.message || "Unknown error occurred"
+      console.error("Replicate Error Details:", JSON.stringify(err?.response?.data || err.message || err, null, 2))
+      // Replicate errors can be nested in various places
+      const errorMsg =
+        err?.response?.data?.detail ||
+        err?.response?.data?.error ||
+        err?.detail ||
+        err?.message ||
+        "Unknown error from Replicate"
       res.status(500).json({ success: false, error: errorMsg })
     }
   }
 )
+
+// ── Gemini Virtual Try-On (Nano Banana Style) ─────────────────────────
+app.post(
+  "/tryon-gemini",
+  upload.fields([
+    { name: "user_image",    maxCount: 1 },
+    { name: "garment_image", maxCount: 1 }
+  ]),
+  async (req, res) => {
+    // Extended timeout for large images and generation
+    req.setTimeout(600000);
+    res.setTimeout(600000);
+
+    try {
+      const userFile    = req.files?.["user_image"]?.[0]
+      const garmentFile = req.files?.["garment_image"]?.[0]
+
+      if (!userFile || !garmentFile) {
+        return res.status(400).json({ success: false, error: "Both images are required" })
+      }
+
+      console.log(`Processing Gemini Try-On: ${userFile.filename} + ${garmentFile.filename}`);
+
+      // Read images
+      const userBuffer    = fs.readFileSync(userFile.path);
+      const garmentBuffer = fs.readFileSync(garmentFile.path);
+
+      // Get original metadata for exact resolution matching
+      const metadata     = await sharp(userBuffer).metadata();
+      const originalW    = metadata.width;
+      const originalH    = metadata.height;
+
+      const userBase64    = userBuffer.toString("base64")
+      const garmentBase64 = garmentBuffer.toString("base64")
+      const userMime      = userFile.mimetype    || "image/jpeg"
+      const garmentMime   = garmentFile.mimetype || "image/jpeg"
+
+      // Clean up uploads
+      fs.unlink(userFile.path,    () => {})
+      fs.unlink(garmentFile.path, () => {})
+
+      console.log("Calling Gemini 2.0 Flash via Vercel AI Gateway (Nano Banana logic)…")
+
+      const projectId = process.env.VERCEL_AI_PROJECT_ID
+      const gatewayId = process.env.VERCEL_AI_GATEWAY_ID
+
+      // High-fidelity image generation model (Nano Banana 2)
+      const modelName = "gemini-3.1-flash-image-preview"
+      
+      let gatewayUrl;
+      const useGateway = projectId && projectId !== "YOUR_PROJECT_ID_HERE" && gatewayId && gatewayId !== "YOUR_GATEWAY_ID_HERE";
+
+      if (useGateway) {
+        gatewayUrl = `https://gateway.ai.vercel.cloud/v1/projects/${projectId}/gateways/${gatewayId}/google-generative-ai/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
+      } else {
+        console.warn("Vercel AI Gateway ID/Project ID not fully configured. Using direct Google API.");
+        gatewayUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
+      }
+
+      const response = await axios.post(gatewayUrl, {
+        contents: [{
+          role: "user",
+          parts: [
+            {
+              text: `You are a state-of-the-art Virtual Try-On AI (Nano Banana logic). 
+Generate a photorealistic fashion photo of the PERSON in Image 1 wearing the GARMENT from Image 2.
+
+STRICT REQUIREMENTS:
+- Identity Preservation: The person's face, features, hair, skin tone, and body proportions MUST be 100% IDENTICAL to Image 1.
+- Seamless Integration: Replace ONLY their top/clothing with the garment from Image 2.
+- Environment: Maintain the exact pose and background from Image 1.
+- Realism: Lighting, shadows, and fabric folds must be physically accurate and high-end luxury fashion quality.
+- Output: Return ONLY the resulting image. No text, no captions, no watermarks.`
+            },
+            { inlineData: { mimeType: userMime,    data: userBase64 } },
+            { inlineData: { mimeType: garmentMime, data: garmentBase64 } }
+          ]
+        }],
+        generationConfig: {
+          responseModalities: ["IMAGE"],
+          temperature: 0.4,
+        }
+      }, {
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.VERCEL_AI_GATEWAY_API_KEY}`
+        },
+        timeout: 180000 // 3 minutes
+      });
+
+      const candidates = response.data?.candidates || []
+      const parts = candidates[0]?.content?.parts || []
+      const imagePart = parts.find(p => p.inlineData?.mimeType?.startsWith("image/"))
+
+      if (!imagePart) {
+        const textParts = parts.filter(p => p.text).map(p => p.text).join(" ")
+        console.warn("Gemini through Gateway returned no image. Text:", textParts)
+        return res.status(500).json({
+          success: false,
+          error: textParts || "Gemini did not return an image. Please ensure the photos are clear and try again."
+        })
+      }
+
+      // ── Exact Resolution Matching Logic ──
+      const aiImageBuffer = Buffer.from(imagePart.inlineData.data, "base64");
+      const matchedBuffer = await sharp(aiImageBuffer)
+        .resize(originalW, originalH, { fit: 'fill' }) 
+        .toBuffer();
+
+      const dataUri = `data:${imagePart.inlineData.mimeType};base64,${matchedBuffer.toString("base64")}`
+      console.log(`Success! Result dimensions matched: ${originalW}x${originalH} (via ${useGateway ? 'Gateway' : 'Direct API'})`);
+      
+      res.json({ success: true, result: dataUri })
+
+    } catch (err) {
+      console.error("Gemini try-on error details:", err.response?.data || err.message)
+      const msg = err.response?.data?.error?.message || err.message || "Internal server error"
+      res.status(500).json({ success: false, error: msg })
+    }
+  }
+)
+
+// Background Removal Endpoint
+app.post("/api/remove-bg", async (req, res) => {
+  try {
+    const { imageUrl } = req.body;
+    if (!imageUrl) return res.status(400).json({ error: "Image URL is required" });
+
+    // Handle relative paths for local garments
+    const fullUrl = imageUrl.startsWith('http') || imageUrl.startsWith('data:') 
+      ? imageUrl 
+      : `${req.protocol}://${req.get('host')}${imageUrl}`;
+
+    console.log("Removing background for:", fullUrl);
+
+    const output = await replicate.run(
+      "cjwbw/rembg:fb8a57bb2118969796f75c40cba45a76c024c000c0a4425633cb9cea4240751e",
+      {
+        input: {
+          image: fullUrl
+        }
+      }
+    );
+
+    console.log("BG removed successfully");
+    res.json({ success: true, result: output });
+  } catch (err) {
+    console.error("Remove BG error:", err);
+    res.status(500).json({ error: err.message || "Failed to remove background" });
+  }
+});
 
 // Demos Endpoints
 const DEMOS_FILE = path.join(__dirname, "demos.json")

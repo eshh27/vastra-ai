@@ -54,8 +54,8 @@ export default function Hero() {
             padding: '18px 45px', background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.4)', backdropFilter: 'blur(10px)',
             borderRadius: '30px', fontSize: '13px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px', cursor: 'pointer', transition: 'all 0.3s ease'
           }}
-          onMouseEnter={(e) => { e.target.style.background = 'rgba(255,255,255,0.25)'; e.target.style.transform = 'translateY(-3px)'; border = '1px solid rgba(255,255,255,0.8)' }}
-          onMouseLeave={(e) => { e.target.style.background = 'rgba(255,255,255,0.1)'; e.target.style.transform = 'translateY(0)'; border = '1px solid rgba(255,255,255,0.4)' }}
+          onMouseEnter={(e) => { e.target.style.background = 'rgba(255,255,255,0.25)'; e.target.style.transform = 'translateY(-3px)'; e.target.style.border = '1px solid rgba(255,255,255,0.8)' }}
+          onMouseLeave={(e) => { e.target.style.background = 'rgba(255,255,255,0.1)'; e.target.style.transform = 'translateY(0)'; e.target.style.border = '1px solid rgba(255,255,255,0.4)' }}
           >
             Try Virtual Room
           </button>

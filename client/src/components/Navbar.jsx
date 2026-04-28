@@ -78,7 +78,7 @@ export default function Navbar() {
         onMouseEnter={e => e.target.style.transform = 'scale(1.05)'}
         onMouseLeave={e => e.target.style.transform = 'scale(1)'}
         >
-          ✨ 3D STUDIO
+        3D STUDIO
         </button>
         <button onClick={() => navigate('/demos')} style={{
           padding: '10px 20px', background: 'transparent', color: '#000', border: '2px solid #111', borderRadius: '30px',
@@ -98,7 +98,7 @@ export default function Navbar() {
         onMouseEnter={e => { e.target.style.transform = 'translateY(-2px)' }}
         onMouseLeave={e => { e.target.style.transform = 'translateY(0)' }}
         >
-          🛍️ Bag ({totalItems})
+          Bag ({totalItems})
         </button>
       </div>
     </nav>

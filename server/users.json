@@ -5,5 +5,12 @@
     "email": "abc@gmail.com",
     "password": "$2b$10$vPmLyVOviJa.6yZHu8szLukotLFsNVosG4BvhHhu2aFt3VxZplRNS",
     "createdAt": "2026-03-26T22:06:33.438Z"
+  },
+  {
+    "id": "1775227159538",
+    "name": "twisha",
+    "email": "twis@gmail",
+    "password": "$2b$10$BacxleWDwBNdNFsUAU5jOejic/Jkr7rhnPkw1f9Ly0Qv5L5kluGx2",
+    "createdAt": "2026-04-03T14:39:19.538Z"
   }
 ]

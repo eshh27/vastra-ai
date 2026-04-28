@@ -51,7 +51,7 @@ function TryOn() {
       formData.append("user_image", userImage)
       formData.append("garment_image", garmentFile)
 
-      setStatus("Generating AI try-on… this may take up to 2 minutes ☕")
+      setStatus("Generating AI try-on… this may take up to 2 minutes")
 
       const res = await axios.post("http://localhost:5000/tryon", formData)
 
@@ -87,7 +87,7 @@ function TryOn() {
 
         {/* Garment panel */}
         <div style={{ textAlign: "center" }}>
-          <p style={{ color: "#555", marginBottom: "10px", fontWeight: "bold" }}>👗 Selected Garment</p>
+          <p style={{ color: "#555", marginBottom: "10px", fontWeight: "bold" }}>Selected Garment</p>
           <img
             src={product.image || "/garments/demo.png"}
             alt="garment"
@@ -98,7 +98,7 @@ function TryOn() {
 
         {/* User photo panel */}
         <div style={{ textAlign: "center" }}>
-          <p style={{ color: "#555", marginBottom: "10px", fontWeight: "bold" }}>🧍 Your Photo</p>
+          <p style={{ color: "#555", marginBottom: "10px", fontWeight: "bold" }}>Your Photo</p>
           {userPreview ? (
             <img
               src={userPreview}
@@ -125,7 +125,7 @@ function TryOn() {
         {/* Result panel */}
         {(loading || result) && (
           <div style={{ textAlign: "center" }}>
-            <p style={{ color: "#555", marginBottom: "10px", fontWeight: "bold" }}>✨ AI Result</p>
+            <p style={{ color: "#555", marginBottom: "10px", fontWeight: "bold" }}>AI Result</p>
             {loading ? (
               <div style={{
                 width: "260px",
@@ -172,7 +172,7 @@ function TryOn() {
           cursor: "pointer",
           fontSize: "14px"
         }}>
-          📷 Choose Photo
+          Choose Photo
           <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: "none" }} />
         </label>
         {userImage && (
@@ -197,7 +197,7 @@ function TryOn() {
           letterSpacing: "1px"
         }}
       >
-        {loading ? "GENERATING…" : "✨ GENERATE TRY-ON"}
+        {loading ? "GENERATING…" : "GENERATE TRY-ON"}
       </button>
 
       {/* Status text */}
@@ -221,7 +221,7 @@ function TryOn() {
               fontSize: "13px"
             }}
           >
-            ⬇ Download Result
+            Download Result
           </a>
         </div>
       )}

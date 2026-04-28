@@ -16,11 +16,11 @@ export default function Promotions() {
       alignItems: 'center',
       gap: '20px'
     }}>
-      <span>✦ END OF REASON SALE</span>
+      <span>END OF REASON SALE</span>
       <span style={{opacity: 0.5}}>|</span>
       <span>FLAT 50% OFF ON PREMIUM GARMENTS</span>
       <span style={{opacity: 0.5}}>|</span>
-      <span>FREE SHIPPING ON ALL ORDERS ✦</span>
+      <span>FREE SHIPPING ON ALL ORDERS</span>
     </div>
   );
 }
